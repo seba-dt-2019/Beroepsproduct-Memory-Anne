@@ -1,0 +1,73 @@
+int XcVierkant = 30;
+int YcVierkant = 20;
+int GrootteVierkant = 20;
+int XcRondje = 60;
+int YcRondje = 20;
+int GrootteRondje = 20;
+boolean HeeftVracht = false;
+
+void setup() 
+{
+  size(500, 300);
+  TekenVierkant(XcVierkant, YcVierkant);
+}
+void draw() 
+{
+  background(0);
+  TekenAllesOpScherm();
+}
+
+void keyPressed() 
+{
+  if (key == CODED) 
+  {
+    if (keyCode == LEFT) 
+    {
+      XcVierkant = XcVierkant - 10;
+    } 
+    else if (keyCode == RIGHT) 
+    {
+      XcVierkant = XcVierkant + 10;
+    }
+    else if (keyCode == UP) 
+    {
+      YcVierkant = YcVierkant - 10;
+    }
+    else if (keyCode == DOWN) 
+    {
+      YcVierkant = YcVierkant + 10;
+    }
+  }
+  if (key == ENTER) 
+  {
+    if (XcVierkant +(GrootteRondje / 2) == XcRondje && YcVierkant +(GrootteRondje / 2) == YcRondje)
+    {
+      HeeftVracht = !HeeftVracht;
+    }
+  } 
+}
+
+void TekenAllesOpScherm()
+{
+  if(HeeftVracht)
+  {
+    XcRondje = XcVierkant +(GrootteRondje / 2);
+    YcRondje = YcVierkant +(GrootteRondje / 2);
+  }  
+  TekenVierkant(XcVierkant, YcVierkant);
+  TekenRondje(XcRondje, YcRondje);
+}
+
+void TekenVierkant(int X, int Y)
+{
+  int XminMax = constrain(X, 10, width -10);
+  int YminMax = constrain(Y, 10, height -10);
+  rect(XminMax, YminMax, GrootteVierkant, GrootteVierkant);
+}
+
+void TekenRondje(int X, int Y)
+{
+  int XminMax = constrain(X, 10, width -10);
+  int YminMax = constrain(Y, 10, height -10);
+  circle(XminMax, YminMax, GrootteRondje);
+}

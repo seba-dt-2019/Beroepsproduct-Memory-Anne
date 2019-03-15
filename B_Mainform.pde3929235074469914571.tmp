@@ -1,0 +1,496 @@
+int beginKaartjesPuntX;
+int beginKaartjesPuntY;
+boolean tekenMemoryKaartjes = false;
+
+void B_Mainform_setup()
+{
+  beginpuntafstandKaartje = constrain(width / 8, 50, 150);
+  beginKaartjesPuntX = (width - (BerekenVerdeling(aantalSetjes * 2) * beginpuntafstandKaartje) + 10) / 2; 
+  beginKaartjesPuntY = (height - (BerekenVerdeling(aantalSetjes * 2) * beginpuntafstandKaartje) + (hoogteBerichtenvak *3)) / 2;
+  
+  background(0,0,0);
+  //stroke(0);
+  //noFill();
+  //fill(255,255,255);
+}
+
+void B_Mainform_draw()
+{
+  background(0,0,0);
+  
+  if (HoofdmenuLaden)
+  { 
+    HoofdmenuMaken();
+  }
+
+  if (kaartenSchudden)
+  {
+    arrayKaartnummers = randomIntArrayAanmaken(aantalSetjes);
+    for(int i = 0; i < arrayKaartnummers.length; i++)
+    {
+        arrayKaartnummersOver[i] = arrayKaartnummers[i];
+    }
+    kaartenSchudden = !kaartenSchudden;
+  }
+
+  if(tekenMemoryKaartjes && !HoofdmenuLaden)
+  {
+    if (wachten)
+    {      
+      int wachtTijd = millis() - startTijd;
+      
+      if (kaartje1Gekozen && kaartje2Gekozen && wachtTijd > 2000)
+      {
+        if (BerekenGeklikteKaart(gekozenKaartje1) == BerekenGeklikteKaart(gekozenKaartje2))
+        {
+          if (isBeurtSpeler1)
+          {
+            puntenSpeler1++;
+            beurtenSpeler1++;
+            arrayKaartnummersOver[gekozenKaartje1] = 0;
+            arrayKaartnummersOver[gekozenKaartje2] = 0;
+          }
+          else
+          {
+            puntenSpeler2++;
+            beurtenSpeler2++;
+            arrayKaartnummersOver[gekozenKaartje1] = 0;
+            arrayKaartnummersOver[gekozenKaartje2] = 0;
+          }
+          potjeIsAfgelopen = true;
+          for(int i = 0; i < arrayKaartnummersOver.length; i++)
+          {
+            if (arrayKaartnummersOver[i] != 0)
+            {
+              potjeIsAfgelopen = false;
+            }
+          }
+          println(potjeIsAfgelopen);
+        }
+        else
+        {
+          if (isBeurtSpeler1)
+          {
+            beurtenSpeler1++;
+            isBeurtSpeler1 = !isBeurtSpeler1;
+          }
+          else
+          {
+            beurtenSpeler2++;
+            isBeurtSpeler1 = !isBeurtSpeler1;
+          }
+        }
+            
+        gekozenKaartje1 = 0;
+        gekozenKaartje2 = 0;
+        kaartje1Gekozen = false;
+        kaartje2Gekozen = false;
+        
+        println("Speler 1 " + isBeurtSpeler1);
+        println("Punten Speler 1 " + puntenSpeler1);
+        println("Punten Speler 2 " + puntenSpeler2);
+        println("Beurten Speler 1 " + beurtenSpeler1);
+        println("Beurten Speler 2 " + beurtenSpeler2);
+        println(arrayKaartnummersOver);
+        println(arrayKaartnummers);
+      }
+    }
+  }
+  
+  if (potjeIsAfgelopen) 
+  {
+    background(255, 0, 0);
+    fill(255);
+    //displays score and lives remaining.
+    textSize(30);
+    text("Punten Speler 1: " + puntenSpeler1 + " Aantal beurten Speler 1: " + beurtenSpeler1, 50, 50);
+    text("Punten Speler 2: " + puntenSpeler2 + " Aantal beurten Speler 2: " + beurtenSpeler2, 50, 85);
+    
+    fill(255);
+    textSize(80);
+    text("GAME OVER", 158, 300);
+    fill(0);
+    textSize(40);
+    text("Klik om opnieuw te starten", 200, 500);
+    int wachtTijd = millis() - startTijd;
+    if (mousePressed && wachtTijd > 2000)
+    {
+      potjeIsAfgelopen = false;
+      kaartenSchudden = true;
+      background(0,0,0);   
+    }
+      
+  }
+    
+  if (kaartje1Gekozen && kaartje2Gekozen && !wachten)
+  {
+    wachten = true;
+    startTijd = millis();
+  }
+  
+  if(tekenMemoryKaartjes && !HoofdmenuLaden)
+  {
+    TekenMemoryKaartjes(aantalSetjes, BerekenGeklikteKaart(gekozenKaartje1), BerekenGeklikteKaart(gekozenKaartje2));
+    
+    String bericht = "";
+    if (isMultiPlayerMode)
+    {
+      bericht = "Multiplayer spel";
+    }
+    
+    if (isSinglePlayerMode)
+    {
+      bericht = "Singleplayer spel";
+    }
+    
+    if (isBeurtSpeler1)
+    {
+      bericht = bericht + ", Speler 1 is aan de beurt, kies 2 kaartjes";
+    }
+    else
+    {
+      bericht = bericht + ", Speler 2 is aan de beurt, kies 2 kaartjes";
+    }
+    
+    if (!potjeIsAfgelopen)
+    {
+      VulBerichten(bericht);
+    }
+  }
+  
+  if (kaartje1Gekozen == false && kaartje2Gekozen == false)
+  {
+    wachten = false;
+  }
+}
+
+void VulBerichten(String bericht)
+{
+  fill(255,255,255);
+  textSize(20);
+  textAlign(LEFT);
+  text(bericht,75,hoogteBerichtenvak - 2);
+}
+
+//int aantalSetjes = 32;//Constraint omheen bouwen met minimaal 12 en maximaal 32
+//int puntenSpeler1 = 0;
+//int puntenSpeler2 = 0;
+//int beurtenSpeler1 = 0;
+//int beurtenSpeler2 = 0;
+//int puntPerKaartje = 1;
+//int [] arrayKaartnummers = new int[aantalSetjes*2];
+//int beginpuntafstandKaartje = 85;
+//int highscore = 0;
+//String highscoreSpelernaam;
+//String naamSpeler1;
+//String naamSpeler2;
+//boolean gestart = false;
+//boolean kaartenSchudden = false;
+//boolean tekenMemoryKaartjes = false;
+//boolean isBeurtSpeler1 = true;
+//boolean kaartje1Gekozen;
+//boolean kaartje2Gekozen;
+//boolean isSinglePlayerMode;
+//boolean isMultiPlayerMode;
+//boolean muisklikToegestaan = true;
+//String berichtenvak;
+//int hoogteBerichtenvak = 20;
+//boolean HoofdmenuLaden = true;
+//int tellerBerichten = 0;
+//int beginKaartjesPuntX;
+//int beginKaartjesPuntY;
+//int gekozenKaartje1 = 0;
+//int gekozenKaartje2 = 0;
+
+//// De mouseover op de kaartjes werkt nog niet goed, de X en Y komt nog niet helemaal overeen.
+
+//PImage achterkantKaart, achterkantKaartMouseOver, Kaartje1, Kaartje2;
+
+//void setup() 
+//{
+//  size(1000, 1100);
+//  beginpuntafstandKaartje = constrain(width / 8, 50, 150);
+//  println(beginpuntafstandKaartje);
+//  beginKaartjesPuntX = (width - (BerekenVerdeling(aantalSetjes * 2) * beginpuntafstandKaartje) + 10) / 2; 
+//  beginKaartjesPuntY = (height - (BerekenVerdeling(aantalSetjes * 2) * beginpuntafstandKaartje) + (hoogteBerichtenvak *3)) / 2;
+  
+//  background(0,0,0);
+//  //stroke(0);
+//  //noFill();
+//  //fill(255,255,255);
+//}
+//void draw() 
+//{ 
+//  background(0,0,0);
+//  //HoofdmenuLaden = true;
+//  println(tellerBerichten);
+//  if (kaartenSchudden)
+//  {
+//    arrayKaartnummers = randomIntArrayAanmaken(aantalSetjes);
+//    kaartenSchudden = !kaartenSchudden;
+//  }
+  
+//  if (HoofdmenuLaden)
+//  { 
+//    BerichtenKlaarZettenEnKnopMaken();
+//  }
+
+//  if(tekenMemoryKaartjes)
+//  {
+//    //TekenMemoryKaartjes(aantalSetjes, arrayKaartnummers[gekozenKaartje1], arrayKaartnummers[gekozenKaartje2]);
+//    TekenMemoryKaartjes(aantalSetjes, BerekenGeklikteKaart(gekozenKaartje1), BerekenGeklikteKaart(gekozenKaartje2));
+//  }
+//}
+
+//int BerekenGeklikteKaart(int Kaartnummer)
+//{
+//  if (arrayKaartnummers.length > 0)
+//  {
+//    return arrayKaartnummers[Kaartnummer];
+//  }
+//  else
+//  {
+//    return 0;
+//  }
+//}
+
+//void BerichtenKlaarZettenEnKnopMaken()
+//{
+//  switch(tellerBerichten)
+//  {
+//  case 0:
+//  // Introductie
+//    VulBerichten("Druk op knop Volgende om verder te gaan...");
+//    TekenKnop("Volgende", 9999);
+//    break;
+//  case 1:
+//  // Introductie
+//    VulBerichten("Welkom bij het spel Memory...");
+//    TekenKnop("Volgende", 9999);
+//    break;
+//  case 2:
+//  // Introductie keuze maken
+//    TekenKnop("Volgende", 9999);
+//    VulBerichten("Kies tussen Multiplayer (m) en Singleplayer (s)...");
+//    if (keyPressed == true)
+//    {
+//      if (key == 'm')
+//      {
+//        tellerBerichten = 100; //Multiplayerkeuze
+//      }
+//      if (key == 's')
+//      {
+//        tellerBerichten = 200; //Singleplayer keuze
+//      }
+//    }
+//    break;
+//  case 3:
+//  // Introductie keuze maken
+//    VulBerichten("Druk op m of s om de keuze te bevestigen");
+//    if (keyPressed == true)
+//    {
+//      if (key == 'm')
+//      {
+//        tellerBerichten = 100; //Multiplayerkeuze
+//      }
+//      if (key == 's')
+//      {
+//        tellerBerichten = 200; //Singleplayer keuze
+//      }
+//    }
+//    break;
+//  case 100:
+//  // Multiplayer
+//      TekenKnop("Volgende", 150);
+//      VulBerichten("U heeft gekozen voor Multiplayer");
+//      isMultiPlayerMode = true;
+//      isSinglePlayerMode = false;
+//      break;
+//  case 150:
+//  //Introductie
+//      TekenKnop("Volgende", 9999);
+//      VulBerichten("Wanneer u op 2 kaartjes heeft geklikt, ...");
+//      break;
+//  case 151:
+//  //Introductie
+//      TekenKnop("Volgende", 9999);
+//      VulBerichten("en u heeft geen 2 gelijke kaartjes, ...");
+//      break;
+//  case 152:
+//  //Introductie
+//      VulBerichten("Dan is de volgende speler aan de beurt...");
+//      TekenKnop("Volgende", 500);
+//      break;
+
+//  case 200:
+//  //Singleplayer
+//      TekenKnop("Volgende", 150);
+//      VulBerichten("U heeft gekozen voor Singleplayer");
+//      isMultiPlayerMode = false;
+//      isSinglePlayerMode = true;
+//      break;
+//  case 500:
+//  //Start
+//      TekenKnop("Start", 9999);
+//      kaartenSchudden = true;
+//      VulBerichten("Druk op Start om het spel te starten...");
+//      break;
+//  case 501:
+//  //Start
+//      VulBerichten("Het spel is gestart, speler 1 is aan de beurt");
+//      tekenMemoryKaartjes = true;
+//      break;
+//  }
+//}
+
+//void TekenKnop(String tekst, int nieuwGetalTeller)
+//{
+//  int x = 2;
+//  int y = 2;
+//  int w = 70;
+//  int h = hoogteBerichtenvak - 4;
+//  if(mousePressed)
+//  {
+//    if(mouseX > x && mouseX < x+w && mouseY > y && mouseY < y+h)
+//    {
+//      if (!muisklikToegestaan)
+//      {
+//        return;
+//      }
+      
+//      fill(0,0,0);
+//      tellerBerichten++;
+//      muisklikToegestaan = false;
+//    }
+//    if (nieuwGetalTeller != 9999)
+//    {
+//      tellerBerichten = nieuwGetalTeller;
+//    }
+//  }
+//  else
+//  {
+//      fill(200,200,200);
+//      muisklikToegestaan = true;
+//  }
+  
+//  rectMode(CORNER);
+
+//  rect(x,y,w,h);
+//  fill(0,0,0);
+//  textSize(hoogteBerichtenvak-5);
+//  textAlign(LEFT);
+//  text(tekst,2,15);
+//}
+//void VulBerichten(String bericht)
+//{
+//  fill(255,255,255);
+//  textSize(20);
+//  textAlign(LEFT);
+//  text(bericht,75,hoogteBerichtenvak - 2);
+//}
+
+//void TekenMemoryKaartjes(int aantal, int kaartnummer1, int kaartnummer2)
+//{
+//    int KaartjesNummer = 0;
+//    achterkantKaart = loadImage ("MemoryDefaultVr.png");
+//    achterkantKaartMouseOver = loadImage ("Memory0.png");
+//    Kaartje1 = loadImage ("Memory" + kaartnummer1 + ".png");
+//    Kaartje2 = loadImage ("Memory" + kaartnummer2 + ".png");
+    
+//    imageMode(CORNER);
+    
+//    achterkantKaart.resize((beginpuntafstandKaartje-10),(beginpuntafstandKaartje-10));
+//    achterkantKaartMouseOver.resize((beginpuntafstandKaartje-10),(beginpuntafstandKaartje-10));
+//    Kaartje1.resize((beginpuntafstandKaartje-10),(beginpuntafstandKaartje-10));
+//    Kaartje2.resize((beginpuntafstandKaartje-10),(beginpuntafstandKaartje-10));
+    
+//    for (int i = 0; i < BerekenVerdeling(aantal * 2); i++)
+//    {
+//      for (int j = 0; j < (BerekenVerdeling(aantal * 2)) && KaartjesNummer < aantal * 2; j++)
+//      {
+//        rectMode(CORNER);
+//        float positiekaartje = dist(((i * (beginpuntafstandKaartje)) + beginKaartjesPuntX), ((hoogteBerichtenvak + (j * (beginpuntafstandKaartje)) + beginKaartjesPuntY)), mouseX - (beginpuntafstandKaartje/2), mouseY - (beginpuntafstandKaartje/2));
+//        if (positiekaartje < beginpuntafstandKaartje / 2)
+//        {
+//          image(achterkantKaartMouseOver, (i * beginpuntafstandKaartje) + beginKaartjesPuntX, (hoogteBerichtenvak + (j * beginpuntafstandKaartje)) + beginKaartjesPuntY);
+          
+//          if (mousePressed == true)
+//          {
+//            if (!kaartje1Gekozen)
+//            {
+//              gekozenKaartje1 = KaartjesNummer;
+//              kaartje1Gekozen = true;
+//            }
+//            else if (!kaartje2Gekozen && (gekozenKaartje1 != KaartjesNummer))
+//            {
+//              gekozenKaartje2 = KaartjesNummer;
+//              kaartje2Gekozen = true;
+//            }
+//          }
+//          println(gekozenKaartje1, gekozenKaartje2);
+//        }
+//        else
+//        {
+//          if (gekozenKaartje1 == KaartjesNummer)
+//          {
+//            image(Kaartje1, (i * beginpuntafstandKaartje) + beginKaartjesPuntX, (hoogteBerichtenvak + (j * beginpuntafstandKaartje)) + beginKaartjesPuntY);
+//          }
+          
+//          else if (gekozenKaartje2 == KaartjesNummer)
+//          {
+//            image(Kaartje2, (i * beginpuntafstandKaartje) + beginKaartjesPuntX, (hoogteBerichtenvak + (j * beginpuntafstandKaartje)) + beginKaartjesPuntY);
+//          }
+          
+//          else
+//          {
+//            image(achterkantKaart, (i * beginpuntafstandKaartje) + beginKaartjesPuntX, (hoogteBerichtenvak + (j * beginpuntafstandKaartje)) + beginKaartjesPuntY);
+//          }
+//        }
+//          KaartjesNummer++;          
+//      }
+//    }
+//}
+
+//int BerekenVerdeling(int aantal)
+//{
+//  return ceil(sqrt(aantal));
+//}
+//int[] randomIntArrayAanmaken (int aantal)
+//{
+//  int [] halveset1 = randomIntArrayAanmakenHalfSetje(aantal);
+//  int [] halveset2 = randomIntArrayAanmakenHalfSetje(aantal);
+  
+//  int [] samengevoegdeArray = concat(halveset1, halveset2);
+//  println(samengevoegdeArray);
+//  return samengevoegdeArray;
+//}
+
+//int[] randomIntArrayAanmakenHalfSetje (int hoogsteNummer) 
+//{
+//  int[] nummersArray = new int [hoogsteNummer];
+//  int k = 0;
+//  while (k < hoogsteNummer) 
+//  {
+//    int randomNummer = (int)random(0, hoogsteNummer +1);
+//    //println(randomNummer);
+//    //println(k);
+//    if (isInArray(nummersArray, randomNummer))
+//    {
+//      nummersArray[k] = (randomNummer);
+//      k++;
+//    }
+//  }
+//  return nummersArray;
+//}
+
+//boolean isInArray(int[] a, int cijfer)
+//{
+//  for (int i = 0; i<a.length;i++)
+//  {
+//    if (a[i] == cijfer)
+//    {
+//      return false;
+//    }
+//  }
+//  return true;
+//}
