@@ -1,4 +1,4 @@
-void RandomKaartjesOmdraaien(int[] array)
+void D_RandomKaartjesOmdraaien(int[] array)
 {
   boolean isNietNul = false;
   if (!kaartje1Gekozen || !kaartje2Gekozen)

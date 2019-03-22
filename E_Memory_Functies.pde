@@ -1,4 +1,4 @@
-void TekenMemoryKaartjes(int aantal, int kaartnummer1, int kaartnummer2)
+void E_TekenMemoryKaartjes(int aantal, int kaartnummer1, int kaartnummer2)
 {
   int KaartjesNummer = 1;
   achterkantKaart = loadImage ("MemoryDefaultVr.png");
@@ -13,9 +13,9 @@ void TekenMemoryKaartjes(int aantal, int kaartnummer1, int kaartnummer2)
   Kaartje1.resize((beginpuntafstandKaartje-10),(beginpuntafstandKaartje-10));
   Kaartje2.resize((beginpuntafstandKaartje-10),(beginpuntafstandKaartje-10));
   
-  for (int y = 0; y < BerekenVerdeling(aantal * 2); y++)
+  for (int y = 0; y < E_BerekenVerdeling(aantal * 2); y++)
   {
-    for (int x = 0; x < (BerekenVerdeling(aantal * 2)) && KaartjesNummer < aantal * 2 +1; x++)
+    for (int x = 0; x < (E_BerekenVerdeling(aantal * 2)) && KaartjesNummer < aantal * 2 +1; x++)
     {
       float positieKaartje = dist(((y * (beginpuntafstandKaartje)) + beginKaartjesPuntX), ((hoogteBerichtenvak + (x * (beginpuntafstandKaartje)) + beginKaartjesPuntY)), mouseX - (beginpuntafstandKaartje/2), mouseY - (beginpuntafstandKaartje/2));
       rectMode(CORNER);
@@ -30,21 +30,21 @@ void TekenMemoryKaartjes(int aantal, int kaartnummer1, int kaartnummer2)
       {
         image(achterkantKaartMouseOver, (y * beginpuntafstandKaartje) + beginKaartjesPuntX, (hoogteBerichtenvak + (x * beginpuntafstandKaartje)) + beginKaartjesPuntY);
         
-        if (mousePressed == true)
+        if (mousePressed == true && !wachten)
         {
-          GekliktKaartjeVerwerken(KaartjesNummer);
+          E_GekliktKaartjeVerwerken(KaartjesNummer);
         }
       }
       else
       {        
-        TekenKaartje(KaartjesNummer, y, x);
+        E_TekenKaartje(KaartjesNummer, y, x);
       }
       KaartjesNummer++;          
     }
   }
 }
 
-int BerekenGeklikteKaart(int Kaartnummer)
+int E_BerekenGeklikteKaart(int Kaartnummer)
 {
   if (arrayKaartnummers.length > 0)
   {
@@ -56,7 +56,7 @@ int BerekenGeklikteKaart(int Kaartnummer)
   }
 }
 
-void TekenKaartje(int kaartjesnummer, int indexI, int indexJ)
+void E_TekenKaartje(int kaartjesnummer, int indexI, int indexJ)
 {
   if (gekozenPlekjeArray1 == kaartjesnummer)
   {
@@ -72,7 +72,7 @@ void TekenKaartje(int kaartjesnummer, int indexI, int indexJ)
   }
 }
 
-void GekliktKaartjeVerwerken(int kaartjesnummer)
+void E_GekliktKaartjeVerwerken(int kaartjesnummer)
 {
   if (!kaartje1Gekozen)
   {
@@ -88,16 +88,16 @@ void GekliktKaartjeVerwerken(int kaartjesnummer)
 
 void KaartenSchudden()
 {
-  arrayKaartnummers = randomIntArrayAanmaken(aantalSetjes);
+  arrayKaartnummers = E_randomIntArrayAanmaken(aantalSetjes);
   for(int i = 0; i < arrayKaartnummers.length; i++)
   {
       arrayKaartnummersOver[i] = arrayKaartnummers[i];
   }
 }
 
-void CheckGeklikteKaartjes()
+void E_CheckGeklikteKaartjes()
 {
-  if (BerekenGeklikteKaart(gekozenPlekjeArray1) == BerekenGeklikteKaart(gekozenPlekjeArray2))
+  if (E_BerekenGeklikteKaart(gekozenPlekjeArray1) == E_BerekenGeklikteKaart(gekozenPlekjeArray2))
   {
     if (isBeurtSpeler1)
     {
@@ -141,14 +141,14 @@ void CheckGeklikteKaartjes()
   kaartje2Gekozen = false;
 }
 
-int BerekenVerdeling(int aantal)
+int E_BerekenVerdeling(int aantal)
 {
   return ceil(sqrt(aantal));
 }
-int[] randomIntArrayAanmaken (int aantal)
+int[] E_randomIntArrayAanmaken (int aantal)
 {
-  int [] halveset1 = randomIntArrayAanmakenHalfSetje(aantal);
-  int [] halveset2 = randomIntArrayAanmakenHalfSetje(aantal);
+  int [] halveset1 = E_E_randomIntArrayAanmakenHalfSetje(aantal);
+  int [] halveset2 = E_E_randomIntArrayAanmakenHalfSetje(aantal);
   
   int [] samengevoegdeArray = concat(halveset1, halveset2);
   
@@ -158,19 +158,19 @@ int[] randomIntArrayAanmaken (int aantal)
     samengevoegdeArray[i]=samengevoegdeArray[x];
     samengevoegdeArray[x]=temp;
   } 
-  int toevoegenNUL[] = new int[1]; // Deze 0 is nodig om een begintoestand te kunnen creeëren.
+  int toevoegenNUL[] = new int[1]; // Deze 0 is nodig om een begintoestand van de kaartjes te kunnen creeëren.
   samengevoegdeArray = concat(toevoegenNUL, samengevoegdeArray);
   return samengevoegdeArray;
 }
 
-int[] randomIntArrayAanmakenHalfSetje (int hoogsteNummer) 
+int[] E_E_randomIntArrayAanmakenHalfSetje (int hoogsteNummer) 
 {
   int[] nummersArray = new int [hoogsteNummer];
   int k = 0;
   while (k < hoogsteNummer) 
   {
     int randomNummer = (int)random(0, hoogsteNummer +1);
-    if (isInArray(nummersArray, randomNummer))
+    if (E_IsAanwezigInArray(nummersArray, randomNummer))
     {
       nummersArray[k] = (randomNummer);
       k++;
@@ -179,7 +179,7 @@ int[] randomIntArrayAanmakenHalfSetje (int hoogsteNummer)
   return nummersArray;
 }
 
-boolean isInArray(int[] a, int cijfer)
+boolean E_IsAanwezigInArray(int[] a, int cijfer)
 {
   for (int i = 0; i<a.length;i++)
   {
